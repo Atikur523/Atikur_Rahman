@@ -1,116 +1,152 @@
+const popupInfo = document.querySelector('.popup-info');
+const main = document.querySelector('.main');
+const quizSection = document.querySelector('.quiz-section');
+const quizBox = document.querySelector('.quiz-box');
+const optionList = document.querySelector('.option-list');
+const nextBtn = document.querySelector('.next-btn');
+const resultBox = document.querySelector('.result-box');
 
-const btn = document.querySelector('#btn');
-const content = document.querySelector('#content');
-const voice = document.querySelector('#voice');
-const responseDiv = document.querySelector('#response');
+document.querySelector('.tryAgain-btn').addEventListener('click',function(){
+    quizBox.classList.add('active');
+    resultBox.classList.remove('active');
+    nextBtn.classList.remove('active');
+    questionCount = 0;
+    questionNumb = 1;
+    userScore = 0;
 
-// Function for speech synthesis (text-to-speech)
-function speak(text) {
-    const text_speak = new SpeechSynthesisUtterance(text);
-    text_speak.lang = 'bn-BD'; // Bengali language
-    text_speak.rate = 1;
-    text_speak.pitch = 1;
-    text_speak.volume = 1;
-    window.speechSynthesis.speak(text_speak);
+    showQuestions(questionCount);
+    questionCounter(questionNumb);
 
-    // Display the spoken text in the response div
-    responseDiv.innerText = text;
-}
+    headerScore();
+})
+document.querySelector('.goHome-btn').addEventListener('click',function(){
+    quizSection.classList.remove('active');
+    resultBox.classList.remove('active');
+    nextBtn.classList.remove('active');
+    questionCount = 0;
+    questionNumb = 1;
+    userScore = 0;
 
-// Greeting function
-function wishMe() {
-    let day = new Date();
-    let hours = day.getHours();
+    showQuestions(questionCount);
+    questionCounter(questionNumb);
 
-    if (hours >= 0 && hours < 12) {
-        speak('Good morning, sir!');
-    } 
-    else if (hours >= 12 && hours < 16) {
-        speak('Good afternoon, sir!');
-    } 
-    else {
-        speak('Good evening, sir!');
-    }
-}
+})
+document.querySelector('.start-btn').addEventListener('click',function(){
+    popupInfo.classList.add('active');
+    main.classList.add('active');                
+});
+document.querySelector('.exit-btn').addEventListener('click',function(){
+    popupInfo.classList.remove('active');
+    main.classList.remove('active');
+});
+document.querySelector('.continue-btn').addEventListener('click',function(){
+    quizSection.classList.add('active');
+    popupInfo.classList.remove('active');
+    main.classList.remove('active');
+    quizBox.classList.add('active');
 
-// SpeechRecognition Setup
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (!SpeechRecognition) {
-    alert('আপনার ব্রাউজার স্পিচ রিকগনিশন সমর্থন করে না। অনুগ্রহ করে Chrome বা Edge ব্যবহার করুন।');
-}
-
-const recognition = new SpeechRecognition();
-recognition.lang = 'bn-BD';
-
-recognition.onresult = (event) => {
-    let currentIndex = event.resultIndex;
-    let transcript = event.results[currentIndex][0].transcript;
-    content.innerText = transcript;
-    console.log('Transcript:', transcript); // Debugging
-    takeCommand(transcript.toLowerCase());
-};
-
-btn.addEventListener('click', () => {
-    btn.style.display = 'none';
-    voice.style.display = 'block';
-
-    try {
-        recognition.start();
-    } catch (err) {
-        console.error('Recognition Error:', err);
-        recognition.stop();
-        recognition.start();
-    }
+    showQuestions(0);
+    questionCounter(1);
+    headerScore();
 });
 
-// Process Commands
-function takeCommand(message) {
-    btn.style.display = 'flex';
-    voice.style.display = 'none';
-    console.log('Command Received:', message);
+nextBtn.onclick = () =>{
+    if(questionCount < questions.length - 1){
+        questionCount++;
+        showQuestions(questionCount);
 
-    if (message.includes('হ্যালো') || message.includes('আস্সালামুআলাইকুম')) {
-        speak('হ্যালো স্যার, আপনাকে কীভাবে সাহায্য করতে পারি?');
-    } 
-    else if (message.includes('তুমি কে')) {
-        speak('আমি রোবো অ্যাসিস্ট্যান্ট, তৈরি করেছেন আতিকুর রহমান রানা স্যার');
-    } 
-    else if (message.includes('ইউটিউব')) {
-        speak('ইউটিউব খুলছি...');
-        window.open('https://www.youtube.com/');
-    } 
-    else if (message.includes('ফেসবুক ')) {
-        speak('ফেসবুক খুলছি...');
-        window.open('https://www.facebook.com/');
-    } 
-    else if (message.includes('টুইটার')) {
-        speak('টুইটার খুলছি...');
-        window.open('https://x.com/?lang=en');
-    } 
-    else if (message.includes('ইন্সট্রাগ্রাম ')) {
-        speak('ইন্সট্রাগ্রাম খুলছি...');
-        window.open('https://www.instagram.com/');
-    } 
-    else if (message.includes('গুগল')) {
-        speak('গুগল খুলছি...');
-        window.open('https://www.google.com/');
-    } 
-    else if (message.includes('ক্যালকুলেটর')) {
-        speak('ক্যালকুলেটর খুলছি...');
-        window.open('file:///C:/Users/ATIKUR/AppData/Local/Temp/Rar$EXa732.32473.rartemp/calculator/index.html');
-    } 
-    else if (message.includes('সময়')) {
-        const time = new Date().toLocaleTimeString('bn-BD', { hour: 'numeric', minute: 'numeric' });
-        speak(`এখন সময় ${time}`);
-    } 
-    else if (message.includes('তারিখ')) {
-        const date = new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'short' });
-        speak(`আজকের তারিখ ${date}`);
-    } 
-    // Default behavior for unknown questions
-    else {
-        speak('আমি ইন্টারনেট থেকে এই তথ্য পেয়েছি.');
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(message)}`);
+        questionNumb++;
+        questionCounter(questionNumb);
+
+        nextBtn.classList.remove('active');
     }
+    else{
+        showResultBox();
+    }
+};
+
+let questionCount = 0;
+let questionNumb = 1;
+let userScore = 0;
+
+function showQuestions(index){
+    const questionText = document.querySelector('.question-text');
+    questionText.textContent = `${questions[index].numb}.${questions[index].question}`;
+
+    const optionTag = `
+        <div class="option"><span>${questions[index].options[0]}</span></div>
+        <div class="option"><span>${questions[index].options[1]}</span></div>
+        <div class="option"><span>${questions[index].options[2]}</span></div>
+        <div class="option"><span>${questions[index].options[3]}</span></div>
+    `;
+    optionList.innerHTML = optionTag;
+    const option = document.querySelectorAll('.option');
+
+    for(var i = 0; i < option.length; i++){
+        option[i].setAttribute('onclick','optionSelected(this)');
+    }
+}
+
+function optionSelected(answer){
+    const userAnswer = answer.textContent;
+    const correctAnswer  = questions[questionCount].answer;
+    const allOptons = optionList.children.length;
+
+    if(userAnswer == correctAnswer){
+        answer.classList.add('correct');
+        userScore += 1;
+        headerScore()
+    }
+    else{
+        answer.classList.add('incorrect'); 
+
+        for(var i = 0; i < allOptons; i++){
+            if(optionList.children[i].textContent == correctAnswer){
+                optionList.children[i].setAttribute('class','option correct');
+            }
+        }
+    }
+
+    for(var i = 0; i < allOptons; i++){
+        optionList.children[i].classList.add('disabled');
+    }
+    nextBtn.classList.add('active');
+}
+
+function questionCounter(index){
+    const questionsTotal = document.querySelector('.questions-total');
+    questionsTotal.textContent = `${index} of ${questions.length} Questions`;
+}
+
+function headerScore(){
+    const headerScoreText = document.querySelector('.header-score');
+    headerScoreText.textContent = `Score: ${userScore} / ${questions.length}`;
+}
+
+function showResultBox() {
+    quizBox.classList.remove('active');
+    resultBox.classList.add('active');
+
+    const scoreText = document.querySelector('.score-text');
+    scoreText.textContent = `Your Score ${userScore} out of ${questions.length}`;
+
+    const circularProgress = document.querySelector('.circular-progress');
+    const progressValue = document.querySelector('.progress-value');
+
+    let progressStartValue = -1;
+    const progressEndValue = Math.round((userScore / questions.length) * 100); // Calculate percentage
+    const speed = 20;
+
+    const progress = setInterval(() => {
+        progressStartValue++;
+
+        // Update the text and circular progress dynamically
+        progressValue.textContent = `${progressStartValue}%`;
+        circularProgress.style.background = `conic-gradient(#c40094 ${progressStartValue * 3.6}deg,
+            rgba(255,255,255, 0.1) ${progressStartValue * 3.6}deg)`;
+
+        if(progressStartValue === progressEndValue){
+            clearInterval(progress);
+        }
+    }, speed);
 }
